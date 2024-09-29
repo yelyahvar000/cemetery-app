@@ -1,3 +1,4 @@
+import { appConfig } from '../config'
 import { TOKEN, USER } from "../constants";
 
 export const getUser = () => {
@@ -9,7 +10,10 @@ export const setUser = (data) => {
 };
 
 export const getToken = () => {
-  return "true" // localStorage.getItem(TOKEN);
+  if (appConfig.enableAuthToken) {
+    return localStorage.getItem(TOKEN);
+  }
+  return appConfig.fakeToken
 };
 
 export const setToken = (data) => {

@@ -27,12 +27,24 @@ const authRouter = createBrowserRouter([
 const authenticatedRouter = createBrowserRouter([
   {
     path: "/",
-    element: <LandingPage />,
+    element: <LoginPage />,
     errorElement: <ErrorPage />,
+  },
+  {
+    path: "/feature/registration",
+    element: <RegistrationPage />,
+  },
+  {
+    path: "/feature/search",
+    element: <LandingPage />,
   },
   {
     path: "/feature/map-route-page",
     element: <MapPage />,
+  },
+  {
+    path: "/feature/admin/map-route-page",
+    element: <MapRoutePage />,
   },
   {
     path: "/feature/admin/map-route-page",
