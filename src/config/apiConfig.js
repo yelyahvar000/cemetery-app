@@ -1,4 +1,4 @@
 export const apiConfig = {
-  baseUrl: "https://pokeapi.co/api/v2/",
+  baseUrl: "http://localhost:9000/",
   headers: {},
 };

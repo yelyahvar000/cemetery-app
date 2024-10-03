@@ -7,8 +7,18 @@ export const loginApi = createApi({
   reducerPath: "loginApi",
   baseQuery: fetchBaseQuery(apiConfig),
   endpoints: (builder) => ({
-    getPokemonByName: builder.query({
-      query: (name) => `pokemon/${name}`,
+    getProfile: builder.query({
+      query: (name) => `/api/v1/user/sign-in`,
+    }),
+    postLogin: builder.mutation({
+      query: (body) => ({
+        url: `/api/v1/user/sign-in`,
+        method: 'POST',
+        headers: {
+          type: "WEB"
+        },
+        body
+      }),
     }),
     //add other query here
   }),
@@ -16,4 +26,4 @@ export const loginApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetPokemonByNameQuery } = loginApi;
+export const { useGetPokemonByNameQuery, usePostLoginMutation } = loginApi;
