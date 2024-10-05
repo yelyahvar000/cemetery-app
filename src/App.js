@@ -1,63 +1,66 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ADMIN, TRESURER } from "./constants";
-import { getToken, getUser, isNotEmpty } from "./utility";
+import { getToken, getUser, isNotEmpty, getPermission, getRole } from "./utility";
 
-import { LoginPage } from "./feature/login-page";
-import { RegistrationPage } from "./feature/registration-page";
-import { LandingPage } from "./feature/landing-page";
-import { MapPage } from "./feature/map-route-page";
-import { MapRoutePage } from "./feature/admin/map-route-page";
-import { PanelPage } from "./feature/admin/panel-page";
-import { ErrorPage } from "./feature/error-page";
+import { LoginPage } from "./cemetery/login";
+import { RegistrationPage } from "./cemetery/registration";
+import { Finder } from "./cemetery/finder";
+import { MapView } from "./cemetery/map-view";
+import { MapSetting } from "./cemetery/admin/map-setting";
+import { AdminPanel } from "./cemetery/admin/admin-panel";
+import { ErrorPage } from "./cemetery/error-page";
 
-const authRouter = createBrowserRouter([
+const authRouter = [
   {
-    path: "/",
+    path: "/cemetery/login",
     element: <LoginPage />,
     errorElement: <ErrorPage />,
   },
   {
-    path: "/feature/registration",
+    path: "/cemetery/registration",
     element: <RegistrationPage />,
   },
-]);
+];
 
+const authenticatedRouter = [
+  {
+    path: "/cemetery/finder",
+    element: <Finder />,
+  },
+  {
+    path: "/cemetery/map-view",
+    element: <MapView />,
+  }
+];
 
-const authenticatedRouter = createBrowserRouter([
+const adminRouter = [
   {
-    path: "/",
-    element: <LoginPage />,
-    errorElement: <ErrorPage />,
+    path: "/cemetery/admin/admin-panel",
+    element: <AdminPanel />
   },
   {
-    path: "/feature/registration",
-    element: <RegistrationPage />,
+    path: "/cemetery/admin/map-setting",
+    element: <MapSetting />,
   },
-  {
-    path: "/feature/search",
-    element: <LandingPage />,
-  },
-  {
-    path: "/feature/map-route-page",
-    element: <MapPage />,
-  },
-  {
-    path: "/feature/admin/map-route-page",
-    element: <MapRoutePage />,
-  },
-  {
-    path: "/feature/admin/map-route-page",
-    element: <MapRoutePage />,
-  },
-  {
-    path: "/feature/admin/panel-page",
-    element: <PanelPage />,
-  },
-]);
+];
+
+const getRouter = () => {
+  if (!getToken()) {
+    return authRouter;
+  } else if ([ADMIN, TRESURER].includes(getRole())) {
+    return [...authenticatedRouter, ...adminRouter];
+  } else {
+    return authenticatedRouter;
+  }
+}
 
 function App() {
-  return <RouterProvider router={isNotEmpty(getToken()) ? authenticatedRouter:  authRouter} />;
+  return (
+    <RouterProvider
+      router={createBrowserRouter(getRouter())}
+    />
+  );
 }
 
 export default App;

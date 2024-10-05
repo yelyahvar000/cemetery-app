@@ -1,3 +1,5 @@
 export * from "./PageWrapper"
 export * from './Modal'
-export * from './TextFields'
+export * from "./TextFields";
+export * from "./Headers";
+export * from "./Canvas";

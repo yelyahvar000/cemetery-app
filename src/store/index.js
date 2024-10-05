@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
-import landingPageSlice from "../feature/landing-page/landingPageSlice";
-import loginSlice from "../feature/login-page/loginPageSlice";
-import registrationPageSlice from "../feature/registration-page/registrationPageSlice";
-import mapPageSlice from "../feature/map-route-page/mapPageSlice";
+import finderSlice from "../cemetery/finder/slice";
+import loginSlice from "../cemetery/login/slice";
+import registrationSlice from "../cemetery/registration/slice";
+import mapViewSlice from "../cemetery/map-view/slice";
 
 import { loginApi } from "../service/loginService";
 import { registrationApi } from "../service/registrationService";
@@ -15,11 +15,10 @@ export const store = configureStore({
     [loginApi.reducerPath]: registrationApi.reducer,
     [registrationApi.reducerPath]: registrationApi.reducer,
     [searchFinderApi.reducerPath]: searchFinderApi.reducer,
-
-    mapPageSlice: mapPageSlice,
-    landingPage: landingPageSlice,
-    loginPage: loginSlice,
-    registrationPage: registrationPageSlice,
+    mapViewSlice,
+    finderSlice,
+    loginSlice,
+    registrationSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
