@@ -224,15 +224,26 @@ export const MapSetting = () => {
       updateCanvas();
     }
 
-    canvasRef.current.addEventListener("mousedown", onMouseDown);
-    canvasRef.current.addEventListener("mouseup", onMouseUp);
-    canvasRef.current.addEventListener("mousemove", onDragging);
+     const mouseEventDown = canvasRef.current.addEventListener(
+       "mousedown",
+       onMouseDown
+     );
+     const mouseEventUp = canvasRef.current.addEventListener(
+       "mouseup",
+       onMouseUp
+     );
+     const mouseEventDrag = canvasRef.current.addEventListener(
+       "mousemove",
+       onDragging
+     );
 
-    return () => {
-      canvasRef.current.removeEventListener("mousedown", onMouseDown);
-      canvasRef.current.removeEventListener("mouseup", onMouseUp);
-      canvasRef.current.removeEventListener("mousemove", onDragging);
-    };
+     return () => {
+       if (mouseEventDown && mouseEventUp && mouseEventDrag) {
+         canvasRef.current.removeEventListener("mousedown", onMouseDown);
+         canvasRef.current.removeEventListener("mouseup", onMouseUp);
+         canvasRef.current.removeEventListener("mousemove", onDragging);
+       }
+     };
   }, [canvasRef.current]);
 
   useEffect(() => {

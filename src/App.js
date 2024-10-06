@@ -8,8 +8,15 @@ import { RegistrationPage } from "./cemetery/registration";
 import { Finder } from "./cemetery/finder";
 import { MapView } from "./cemetery/map-view";
 import { MapSetting } from "./cemetery/admin/map-setting";
-import { AdminPanel } from "./cemetery/admin/admin-panel";
+import { AdminPanel } from "./cemetery/admin/admin";
 import { ErrorPage } from "./cemetery/error-page";
+import { Logs } from "./cemetery/admin/logs";
+import { Profiling } from "./cemetery/admin/profiling";
+import { Reports } from "./cemetery/admin/reports";
+import { Notification } from "./cemetery/admin/notification";
+import { UserManagement } from "./cemetery/admin/user-management";
+import { Dashboard } from "./cemetery/admin/dashboard";
+import {Mapping} from "./cemetery/admin/mapping";
 
 const authRouter = [
   {
@@ -36,12 +43,46 @@ const authenticatedRouter = [
 
 const adminRouter = [
   {
-    path: "/cemetery/admin/admin-panel",
-    element: <AdminPanel />
-  },
-  {
-    path: "/cemetery/admin/map-setting",
-    element: <MapSetting />,
+    path: "/cemetery/admin",
+    element: <AdminPanel />,
+    children: [
+      {
+        path: "map-setting",
+        element: <MapSetting />,
+      },
+      {
+        path: "mapping",
+        element: <Mapping />,
+      },
+      {
+        path: "user-management",
+        element: <UserManagement />,
+      },
+      {
+        path: "profiling",
+        element: <Profiling />,
+      },
+      {
+        path: "logs",
+        element: <Logs />,
+      },
+      {
+        path: "notification",
+        element: <Notification />,
+      },
+      {
+        path: "reports",
+        element: <Reports />,
+      },
+      {
+        path: "dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "map-details",
+        element: <Dashboard />,
+      },
+    ],
   },
 ];
 
