@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import "./login.css"
 import {PageWrapper} from '../../shared'
 import { PasswordField, SimpleField } from "../../shared/TextFields";
+import { ROUTE_REGISTRATION } from "../../constants";
 
 export const LoginPage = () => {
   const [login] = usePostLoginMutation();
@@ -131,7 +132,7 @@ export const LoginPage = () => {
             <Grid2 sx={{ marginTop: "12px" }}>
               <Typography variant="caption">
                 Dont have an account yet?{" "}
-                <Link to={"/feature/registration"}>SIGN UP</Link>
+                <Link to={ROUTE_REGISTRATION}>SIGN UP</Link>
               </Typography>
             </Grid2>
           </div>

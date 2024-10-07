@@ -1,7 +1,11 @@
-import { Box } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import BasicTable from "../../../shared/Table/BasicTable";
+import { useState } from "react";
 
 export const Notification = () => {
+  const [page, setPage] = useState(1);
+  const [count, setCount] = useState(3);
+
   const rows = [
     {
       id: 1,
@@ -29,33 +33,71 @@ export const Notification = () => {
     },
   ];
 
-  const headers = [
-    "id",
-    "First Name",
-    "Last Name",
-    "Email",
-    "Due Date",
-    "Amount",
-    'Options'
+  const columns = [
+    {
+      title: "id",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "First Name",
+      dataIndex: "firstName",
+      key: "firstName",
+    },
+    {
+      title: "Last Name",
+      dataIndex: "lastName",
+      key: "lastName",
+    },
+    {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Due Date",
+      dataIndex: "dueDate",
+      key: "dueDate",
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (record) => (
+        <Box>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => onAction(record)}
+          >
+            Edit
+          </Button>
+        </Box>
+      ),
+    },
   ];
 
-  const buttons = [
-   { name: "send email"},
-   { name: "verified Payment"}
-  ];
+  const onAction = (data) => {
+    console.log("onAction", data);
+  };
 
-  const onAction = (name, data) => {
-    console.log("onAction", name, data);
+  const onPageChange = (value) => {
+    setPage(value);
   };
 
   return (
     <Box>
       <BasicTable
         rows={rows}
-        headers={headers}
-        buttons={buttons}
-        onAction={onAction}
+        columns={columns}
+        onPageChange={onPageChange}
+        page={page}
+        count={count}
       />
     </Box>
   );
-}
+};

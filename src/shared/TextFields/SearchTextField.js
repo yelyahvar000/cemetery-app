@@ -6,7 +6,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import DirectionsIcon from "@mui/icons-material/Directions";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 
 export function SearchTextField({ callback }) {
   return (
@@ -26,7 +26,9 @@ export function SearchTextField({ callback }) {
         <SearchIcon />
       </IconButton>
       <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-      <Button onClick={callback}>Search</Button>
+      <Button onClick={callback}>
+        <Typography fontWeight={800}>Search</Typography>
+      </Button>
     </Paper>
   );
 }

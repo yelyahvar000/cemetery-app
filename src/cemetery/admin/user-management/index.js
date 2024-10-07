@@ -1,8 +1,11 @@
-import { Box } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import BasicTable from "../../../shared/Table/BasicTable";
-import { SimpleField } from "../../../shared";
+import { useState } from "react";
 
 export const UserManagement = () => {
+  const [page, setPage] = useState(1);
+  const [count, setCount] = useState(3);
+
   const rows = [
     {
       id: 1,
@@ -20,36 +23,73 @@ export const UserManagement = () => {
     },
     {
       id: 3,
-      deceased: "Captain",
-      bornDate: "America",
-      diedDate: "Captain.America",
+      firstName: "Captain",
+      lastName: "America",
+      userName: "Captain.America",
       position: "Local Economics",
     },
   ];
 
-  const headers = [
-    "id",
-    "First Name",
-    "Last Name",
-    "User Name",
-    "Position",
-    "Options",
+  const columns = [
+    {
+      title: "id",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "firstName",
+      dataIndex: "firstName",
+      key: "firstName",
+    },
+    {
+      title: "lastName",
+      dataIndex: "lastName",
+      key: "lastName",
+    },
+    {
+      title: "userName",
+      dataIndex: "userName",
+      key: "userName",
+    },
+    {
+      title: "position",
+      dataIndex: "position",
+      key: "position"
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (record) => (
+        <Box>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => onAction(record)}
+          >
+            Edit
+          </Button>
+        </Box>
+      ),
+    },
   ];
 
-  const buttons = [{ name: "EDIT" }, { name: "DELETE" }];
+  const onAction = (data) => {
+    console.log("onAction", data);
+  };
 
-  const onAction = (name, data) => {
-    console.log("onAction", name, data);
+  const onPageChange = (value) => {
+    setPage(value);
   };
 
   return (
     <Box>
       <BasicTable
         rows={rows}
-        headers={headers}
-        buttons={buttons}
-        onAction={onAction}
+        columns={columns}
+        onPageChange={onPageChange}
+        page={page}
+        count={count}
       />
     </Box>
   );
-};
+}

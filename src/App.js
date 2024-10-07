@@ -6,8 +6,9 @@ import { getToken, getUser, isNotEmpty, getPermission, getRole } from "./utility
 import { LoginPage } from "./cemetery/login";
 import { RegistrationPage } from "./cemetery/registration";
 import { Finder } from "./cemetery/finder";
+import { About } from "./cemetery/about";
+import { ContactUs } from "./cemetery/contact-us";
 import { MapView } from "./cemetery/map-view";
-import { MapSetting } from "./cemetery/admin/map-setting";
 import { AdminPanel } from "./cemetery/admin/admin";
 import { ErrorPage } from "./cemetery/error-page";
 import { Logs } from "./cemetery/admin/logs";
@@ -16,7 +17,13 @@ import { Reports } from "./cemetery/admin/reports";
 import { Notification } from "./cemetery/admin/notification";
 import { UserManagement } from "./cemetery/admin/user-management";
 import { Dashboard } from "./cemetery/admin/dashboard";
-import {Mapping} from "./cemetery/admin/mapping";
+import { Mapping } from "./cemetery/admin/mapping";
+import { MapSetting } from "./cemetery/admin/map-setting";
+
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 
 const authRouter = [
   {
@@ -32,13 +39,21 @@ const authRouter = [
 
 const authenticatedRouter = [
   {
+    path: "/cemetery/about",
+    element: <About />,
+  },
+  {
+    path: "/cemetery/contact-us",
+    element: <ContactUs />,
+  },
+  {
     path: "/cemetery/finder",
     element: <Finder />,
   },
   {
     path: "/cemetery/map-view",
     element: <MapView />,
-  }
+  },
 ];
 
 const adminRouter = [
@@ -46,10 +61,6 @@ const adminRouter = [
     path: "/cemetery/admin",
     element: <AdminPanel />,
     children: [
-      {
-        path: "map-setting",
-        element: <MapSetting />,
-      },
       {
         path: "mapping",
         element: <Mapping />,
@@ -77,12 +88,12 @@ const adminRouter = [
       {
         path: "dashboard",
         element: <Dashboard />,
-      },
-      {
-        path: "map-details",
-        element: <Dashboard />,
-      },
+      }
     ],
+  },
+  {
+    path: "/cemetery/admin/map-setting",
+    element: <MapSetting />,
   },
 ];
 

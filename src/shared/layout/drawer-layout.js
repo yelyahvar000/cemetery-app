@@ -135,15 +135,16 @@ function ResponsiveDrawer(props) {
         }}
       >
         <Toolbar>
-          <Grid2 container sx={{ width: "100%" }} alignItems={'center'}>
-            <Grid2 size={8}>{curUrl}</Grid2>
-            <Grid2 size={4}>
-              <Button variant="outlined" color="error">
+          <Stack  sx={{width:'100%'}} direction={"row"} alignItems={'center'} justifyContent={"space-between"}>
+            <Box>
+              <Typography>{curUrl}</Typography>
+            </Box>
+            <Box>
+              <Button variant="outlined" color="white">
                 LOGOUT
               </Button>
-              <Stack direction={"row"}></Stack>
-            </Grid2>
-          </Grid2>
+            </Box>
+          </Stack>
         </Toolbar>
         {/* <Toolbar>
           <Typography variant="h6" noWrap component="div">

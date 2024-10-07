@@ -1,7 +1,10 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import BasicTable from "../../../shared/Table/BasicTable";
+import { useState } from "react";
 
 export const Mapping = () => {
+  const [page, setPage] = useState(1);
+  const [count, setCount] = useState(3);
 
   const rows = [
     {
@@ -30,30 +33,71 @@ export const Mapping = () => {
     },
   ];
 
-  const headers = [
-    "id",
-    "Deceased",
-    "Born Date",
-    "Died Date",
-    "Place",
-    "Niche",
-    "Options",
+  const columns = [
+    {
+      title: "id",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "deceased",
+      dataIndex: "deceased",
+      key: "deceased",
+    },
+    {
+      title: "bornDate",
+      dataIndex: "bornDate",
+      key: "bornDate",
+    },
+    {
+      title: "diedDate",
+      dataIndex: "diedDate",
+      key: "diedDate",
+    },
+    {
+      title: "place",
+      dataIndex: "place",
+      key: "place",
+    },
+    {
+      title: "niche",
+      dataIndex: "niche",
+      key: "niche",
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (record) => (
+        <Box>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={() => onAction(record)}
+          >
+            Edit
+          </Button>
+        </Box>
+      ),
+    },
   ];
 
-  const buttons = [{ name: "Niche" }, { name: "Routes" }];
+  const onAction = (data) => {
+    console.log("onAction", data);
+  };
 
-  const onAction = (name, data) => {
-    console.log("onAction", name, data);
-  }
+  const onPageChange = (value) => {
+    setPage(value);
+  };
 
   return (
     <Box>
       <BasicTable
         rows={rows}
-        headers={headers}
-        buttons={buttons}
-        onAction={onAction}
+        columns={columns}
+        onPageChange={onPageChange}
+        page={page}
+        count={count}
       />
     </Box>
   );
-}
+};

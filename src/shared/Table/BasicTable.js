@@ -6,61 +6,57 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { Button, Stack } from "@mui/material";
+import { Box, Button, Grid2, Stack } from "@mui/material";
+import Pagination from "@mui/material/Pagination";
 
-
-
-export default function BasicTable({ rows = [], headers = [], buttons = [], onAction = null}) {
+export default function BasicTable({
+  rows = [],
+  columns = [],
+  onPageChange = null,
+  page = 1,
+  count = 0,
+}) {
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            {headers.map((item) => {
-              return <TableCell sx={{ fontWeight: "800" }}>{item}</TableCell>;
+    <Stack>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              {columns.map((item) => {
+                return (
+                  <TableCell sx={{ fontWeight: "800" }}>{item.title}</TableCell>
+                );
+              })}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row) => {
+              return (
+                <TableRow>
+                  {columns.map((col, index) => {
+                    return (
+                      <TableCell
+                        key={`${row.name}-${index}`}
+                        component="th"
+                        scope="row"
+                      >
+                        {col.render ? col.render(row) : row[col.key]}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
             })}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => {
-            const data = Object.values(row);
-            return (
-              <TableRow
-                key={row.name}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                {data.map((item, index) => {
-                  return (
-                    <TableCell
-                      key={`${row.name}-${index}`}
-                      component="th"
-                      scope="row"
-                    >
-                      {item}
-                    </TableCell>
-                  );
-                })}
-                <TableCell>
-                  <Stack direction={'row'} spacing={1}>
-                    {buttons.map((button) => {
-                      return (
-                        <Button
-                          size="small"
-                          variant="contained"
-                          color="primary"
-                          onClick={() => onAction(button.name, row)}
-                        >
-                          {button?.name}
-                        </Button>
-                      );
-                    })}
-                  </Stack>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {count > 0 && (
+        <Grid2 container justifyContent={"end"}>
+          <Box padding={2}>
+            <Pagination page={page} count={count} onChange={onPageChange} />
+          </Box>
+        </Grid2>
+      )}
+    </Stack>
   );
 }
