@@ -6,15 +6,13 @@ import loginSlice from "../cemetery/login/slice";
 import registrationSlice from "../cemetery/registration/slice";
 import mapViewSlice from "../cemetery/map-view/slice";
 
-import { loginApi } from "../service/loginService";
-import { registrationApi } from "../service/registrationService";
-import { searchFinderApi } from "../service/searchFinderService";
-;
+import { clientApi } from "../service/clientService";
+import { adminApi } from "../service/adminService";
+
 export const store = configureStore({
   reducer: {
-    [loginApi.reducerPath]: registrationApi.reducer,
-    [registrationApi.reducerPath]: registrationApi.reducer,
-    [searchFinderApi.reducerPath]: searchFinderApi.reducer,
+    [clientApi.reducerPath]: clientApi.reducer,
+    [adminApi.reducerPath]: adminApi.reducer,
     mapViewSlice,
     finderSlice,
     loginSlice,
@@ -22,9 +20,8 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
-      loginApi.middleware,
-      registrationApi.middleware,
-      searchFinderApi.middleware
+      adminApi.middleware,
+      clientApi.middleware
     ),
 });
 

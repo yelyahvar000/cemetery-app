@@ -19,16 +19,20 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import "./index.css";
 import ModalMenu from "../../shared/Modal/ModalMenu";
 import MenuIcon from "@mui/icons-material/Menu";
+import BG from "../../assets/about.jpg";
 
 import {
   MODAL_CLICK_ABOUT,
   MODAL_CLICK_CLOSE,
   MODAL_CLICK_CONTACT_US,
   MODAL_CLICK_HOME,
+  MODAL_CLICK_LOGOUT,
   ROUTE_ABOUT,
   ROUTE_CONTACT_US,
   ROUTE_FINDER,
+  ROUTE_LOGIN,
 } from "../../constants";
+import { resetStorage } from "../../utility";
 
 const WhiteBorderTextField = styled(TextField)`
   border: 1px solid white;
@@ -66,12 +70,16 @@ export const ContactUs = () => {
       case MODAL_CLICK_HOME:
         navigate(ROUTE_FINDER);
         break;
+      case MODAL_CLICK_LOGOUT:
+        resetStorage();
+        navigate(ROUTE_LOGIN);
+        break;
     }
   };
 
   return (
-    <Paper>
-      <Box sx={{ background: "black", paddingBottom:'4rem' }}>
+    <Paper sx={{ backgroundImage: `url("${BG}")` }}>
+      <Box sx={{ paddingBottom: "4rem" }}>
         <Box
           justifyContent={"flex-end"}
           sx={{ display: "flex", padding: "2rem" }}

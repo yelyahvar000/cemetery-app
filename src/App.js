@@ -1,7 +1,36 @@
-import React from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { ADMIN, TRESURER } from "./constants";
-import { getToken, getUser, isNotEmpty, getPermission, getRole } from "./utility";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  createBrowserRouter,
+  redirect,
+  RouterProvider,
+} from "react-router-dom";
+import {
+  ADMIN,
+  ROUTE_ABOUT,
+  ROUTE_ADMIN,
+  ROUTE_ADMIN_DASHBOARD,
+  ROUTE_ADMIN_LOGIN,
+  ROUTE_ADMIN_LOGS,
+  ROUTE_ADMIN_MAP_SETTING,
+  ROUTE_ADMIN_MAPPING,
+  ROUTE_ADMIN_NOTIFICATION,
+  ROUTE_ADMIN_PROFILING,
+  ROUTE_ADMIN_REPORTS,
+  ROUTE_ADMIN_USER_MANAGEMENT,
+  ROUTE_CONTACT_US,
+  ROUTE_FINDER,
+  ROUTE_LOGIN,
+  ROUTE_MAP_VIEW,
+  ROUTE_REGISTRATION,
+  TRESURER,
+} from "./constants";
+import {
+  getToken,
+  getUser,
+  isNotEmpty,
+  getPermission,
+  getRole,
+} from "./utility";
 
 import { LoginPage } from "./cemetery/login";
 import { RegistrationPage } from "./cemetery/registration";
@@ -9,6 +38,7 @@ import { Finder } from "./cemetery/finder";
 import { About } from "./cemetery/about";
 import { ContactUs } from "./cemetery/contact-us";
 import { MapView } from "./cemetery/map-view";
+
 import { AdminPanel } from "./cemetery/admin/admin";
 import { ErrorPage } from "./cemetery/error-page";
 import { Logs } from "./cemetery/admin/logs";
@@ -19,100 +49,178 @@ import { UserManagement } from "./cemetery/admin/user-management";
 import { Dashboard } from "./cemetery/admin/dashboard";
 import { Mapping } from "./cemetery/admin/mapping";
 import { MapSetting } from "./cemetery/admin/map-setting";
+import { useNavigate } from "react-router-dom";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-const authRouter = [
+function ProtectedRoutes({ children, permission }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const responsePermission = getPermission();
+    const token = getToken();
+    const user = getUser();
+
+    if (
+      !responsePermission ||
+      !token ||
+      !user ||
+      !responsePermission[permission]
+    ) {
+      navigate(ROUTE_LOGIN);
+    } 
+  }, []);
+
+  return <>{children}</>;
+}
+
+function AdminProtectedRoutes({ children, permission }) {
+  const navigate = useNavigate();
+  const [showChildren, setShowChildren] = useState(false);
+
+   useEffect(() => {
+     const responsePermission = getPermission();
+     const token = getToken();
+     const user = getUser();
+     if (!responsePermission || !token || !user) {
+       navigate(ROUTE_LOGIN);
+     } else {
+       const show =
+         user?.accountType == "admin"
+           ? permission
+             ? responsePermission[permission]
+             : true
+           : false;
+       setShowChildren(show);
+     }
+   }, [getToken(), getUser(), getPermission()]);
+  
+   return <>{showChildren ? children : <>No rights to view this page</>}</>;
+}
+
+const appRoutes = [
   {
-    path: "/cemetery/login",
+    path: ROUTE_LOGIN,
     element: <LoginPage />,
     errorElement: <ErrorPage />,
   },
   {
-    path: "/cemetery/registration",
+    path: ROUTE_REGISTRATION,
     element: <RegistrationPage />,
   },
-];
-
-const authenticatedRouter = [
   {
-    path: "/cemetery/about",
-    element: <About />,
+    path: ROUTE_ABOUT,
+    element: (
+      <ProtectedRoutes permission="canViewGuest">
+        <About />
+      </ProtectedRoutes>
+    ),
   },
   {
-    path: "/cemetery/contact-us",
-    element: <ContactUs />,
+    path: ROUTE_CONTACT_US,
+    element: (
+      <ProtectedRoutes permission="canViewGuest">
+        <ContactUs />
+      </ProtectedRoutes>
+    ),
   },
   {
-    path: "/cemetery/finder",
-    element: <Finder />,
+    path: ROUTE_FINDER,
+    element: (
+      <ProtectedRoutes permission="canViewGuest">
+        <Finder />
+      </ProtectedRoutes>
+    ),
   },
   {
-    path: "/cemetery/map-view",
-    element: <MapView />,
+    path: ROUTE_MAP_VIEW,
+    element: (
+      <ProtectedRoutes permission="canViewGuest">
+        <MapView />
+      </ProtectedRoutes>
+    ),
   },
-];
-
-const adminRouter = [
   {
-    path: "/cemetery/admin",
-    element: <AdminPanel />,
+    path: ROUTE_ADMIN_MAP_SETTING,
+    element: (
+      <AdminProtectedRoutes permission="canViewMapping">
+        <MapSetting />
+      </AdminProtectedRoutes>
+    ),
+  },
+  {
+    path: ROUTE_ADMIN_MAPPING,
+    element: (
+      <AdminProtectedRoutes permission="canViewMapping">
+        <Mapping />
+      </AdminProtectedRoutes>
+    ),
+  },
+  {
+    path: ROUTE_ADMIN,
+    element: (
+      <AdminProtectedRoutes>
+        <AdminPanel />
+      </AdminProtectedRoutes>
+    ),
     children: [
       {
-        path: "mapping",
-        element: <Mapping />,
+        path: ROUTE_ADMIN_USER_MANAGEMENT,
+        element: (
+          <AdminProtectedRoutes permission="canViewUserManagementX">
+            <UserManagement />
+          </AdminProtectedRoutes>
+        ),
       },
       {
-        path: "user-management",
-        element: <UserManagement />,
+        path: ROUTE_ADMIN_PROFILING,
+        element: (
+          <AdminProtectedRoutes permission="canViewProfiling">
+            <Profiling />
+          </AdminProtectedRoutes>
+        ),
       },
       {
-        path: "profiling",
-        element: <Profiling />,
+        path: ROUTE_ADMIN_LOGS,
+        element: (
+          <AdminProtectedRoutes permission="canViewLogsX">
+            <Logs />
+          </AdminProtectedRoutes>
+        ),
       },
       {
-        path: "logs",
-        element: <Logs />,
+        path: ROUTE_ADMIN_NOTIFICATION,
+        element: (
+          <AdminProtectedRoutes permission="canViewNotificationsX">
+            <Notification />
+          </AdminProtectedRoutes>
+        ),
       },
       {
-        path: "notification",
-        element: <Notification />,
+        path: ROUTE_ADMIN_REPORTS,
+        element: (
+          <AdminProtectedRoutes permission="canViewReportsX">
+            <Reports />
+          </AdminProtectedRoutes>
+        ),
       },
       {
-        path: "reports",
-        element: <Reports />,
+        path: ROUTE_ADMIN_DASHBOARD,
+        element: (
+          <AdminProtectedRoutes permission="canViewLocalEconomicEnterprise">
+            <Dashboard />
+          </AdminProtectedRoutes>
+        ),
       },
-      {
-        path: "dashboard",
-        element: <Dashboard />,
-      }
     ],
-  },
-  {
-    path: "/cemetery/admin/map-setting",
-    element: <MapSetting />,
   },
 ];
 
-const getRouter = () => {
-  if (!getToken()) {
-    return authRouter;
-  } else if ([ADMIN, TRESURER].includes(getRole())) {
-    return [...authenticatedRouter, ...adminRouter];
-  } else {
-    return authenticatedRouter;
-  }
-}
-
 function App() {
-  return (
-    <RouterProvider
-      router={createBrowserRouter(getRouter())}
-    />
-  );
+  return <RouterProvider router={createBrowserRouter(appRoutes)} />;
 }
 
 export default App;

@@ -1,37 +1,79 @@
-
-import { Button, TextField, Alert, Typography, Grid2, Divider } from "@mui/material";
+import {
+  Button,
+  TextField,
+  Alert,
+  Typography,
+  Grid2,
+  Divider,
+} from "@mui/material";
 import LOGO from "../../assets/Buenavista-sm.png";
 import BG from "../../assets/main-bg.jpg";
-import { Link } from "react-router-dom";
-import { usePostLoginMutation } from "../../service/loginService";
+import { Link, useNavigate } from "react-router-dom";
+import { useClientRegisterMutation } from "../../service/clientService";
 import { useEffect, useState } from "react";
 import "./index.css";
 import { PageWrapper } from "../../shared";
 import { PasswordField, SimpleField } from "../../shared/TextFields";
 import { ROUTE_LOGIN } from "../../constants";
 
-export const RegistrationPage = () => {
-  const [login] = usePostLoginMutation();
 
+export const RegistrationPage = () => {
+  const navigate = useNavigate()
+  const [register] = useClientRegisterMutation();
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  
   const [isLoading, setIsLoading] = useState(false);
   const [apiStatus, setApiStatus] = useState({
     success: null,
     message: "",
   });
 
-  const onLogin = async () => {
-    setIsLoading(true);
-    const response = await login({
-      email: "email@domain.com",
-      password: "Password123",
-    });
-    setIsLoading(false);
-    if (response.error) {
-      setApiStatus("FAILED");
-    } else {
-      setApiStatus("SUCCESS");
+  const validate = () => {
+    const passwordIsNotThesame = password != confirmPassword;
+    const hasNull = [gender,firstName, lastName, userName, email, password].some(
+      (item) => item == null || item == undefined || item == ""
+    );
+    if (passwordIsNotThesame || hasNull) {
+      throw new Error('Validation error')
     }
-    console.log("response", response);
+  }
+
+  const onRegisterClick = async () => {
+    try {
+      //validate()
+      setIsLoading(true);
+      const response = await register({
+        firstName,
+        lastName,
+        userName,
+        email,
+        password,
+        role: "client",
+      });
+      console.log("register response:", response);
+      setIsLoading(false);
+      if (response.error) {
+        setApiStatus({
+          message: response.error.data.message,
+          status: response.error.status
+        });
+      } else {
+         setApiStatus({
+           message: 'Successfully registered',
+           status: 200,
+         });
+        navigate(ROUTE_LOGIN)
+      }
+      console.log("response", response);
+    } catch (error) {}
+    
   };
 
   return (
@@ -97,10 +139,26 @@ export const RegistrationPage = () => {
               marginTop={"40px"}
             >
               <Grid2 spacing={2}>
-                <SimpleField label="First Name" />
+                <SimpleField
+                  required={true}
+                  label="First Name"
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
               </Grid2>
               <Grid2 spacing={2}>
-                <SimpleField label="Last Name" />
+                <SimpleField
+                  required={true}
+                  label="Last Name"
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+              </Grid2>
+
+              <Grid2 spacing={2}>
+                <SimpleField
+                  required={true}
+                  label="gender"
+                  onChange={(e) => setUserName(e.target.value)}
+                />
               </Grid2>
 
               <Grid2 size={12} margin={1}>
@@ -108,27 +166,49 @@ export const RegistrationPage = () => {
               </Grid2>
 
               <Grid2 spacing={2}>
-                <SimpleField label="User Name" />
+                <SimpleField
+                  required={true}
+                  label="User Name"
+                  onChange={(e) => setUserName(e.target.value)}
+                />
+              </Grid2>
+
+              <Grid2 spacing={2}>
+                <SimpleField
+                  required={true}
+                  label="Email Address"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </Grid2>
               <Grid2 spacing={2}>
-                <SimpleField label="Email Address" />
+                <PasswordField
+                  required={true}
+                  label="Password"
+                  onChange={(value) => setPassword(value)}
+                />
               </Grid2>
               <Grid2 spacing={2}>
-                <PasswordField label="Confirm Password" />
-              </Grid2>
-              <Grid2 spacing={2}>
-                <PasswordField label="Password" />
+                <PasswordField
+                  required={true}
+                  label="Confirm Password"
+                  onChange={(value) => setConfirmPassword(value)}
+                />
               </Grid2>
 
               <Grid2 container justifyContent={"center"} marginTop={2}>
-                <Button fullWidth size="small" variant="contained">
+                <Button
+                  onClick={onRegisterClick}
+                  fullWidth
+                  size="small"
+                  variant="contained"
+                >
                   SIGN UP
                 </Button>
               </Grid2>
             </Grid2>
 
             <Grid2 sx={{ marginTop: "12px" }}>
-              <Typography variant="caption">
+              <Typography variant="caption" sx={{color:'black'}}>
                 Already have an account? <Link to={ROUTE_LOGIN}>SIGN IN</Link>
               </Typography>
             </Grid2>
@@ -138,8 +218,3 @@ export const RegistrationPage = () => {
     />
   );
 };
-
-
-          
-          
-

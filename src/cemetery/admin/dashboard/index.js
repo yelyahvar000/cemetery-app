@@ -34,11 +34,19 @@ export const Dashboard = () => {
 
   return (
     <Grid2 container spacing={2}>
-      {dashboardValues.map((item) => {
-        return (
-          <DashboardItem title={item.name} value={item.value} imageSrc={item.imageSrc} />
-        );
-      })}
+     
+        {dashboardValues.map((item) => {
+          return (
+            <Grid2 sm={12}>
+              <DashboardItem
+                title={item.name}
+                value={item.value}
+                imageSrc={item.imageSrc}
+              />
+            </Grid2>
+          );
+        })}
+     
     </Grid2>
   );
 };

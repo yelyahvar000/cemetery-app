@@ -5,7 +5,9 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { Divider, Stack } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { MODAL_CLICK_ABOUT, MODAL_CLICK_CLOSE, MODAL_CLICK_CONTACT_US, MODAL_CLICK_HOME } from "../../constants";
+import { MODAL_CLICK_ABOUT, MODAL_CLICK_CLOSE, MODAL_CLICK_CONTACT_US, MODAL_CLICK_HOME, MODAL_CLICK_LOGOUT, ROUTE_LOGIN } from "../../constants";
+import { resetStorage } from "../../utility";
+import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -19,19 +21,22 @@ const style = {
   p: 4,
 };
 
-export default function ModalMenu({ open = false, handleClick=null }) {
+export default function ModalMenu({ open = false, handleClick = null }) {
 
   return (
     <div>
       <Modal
         open={open}
-        onClose={()=>handleClick(MODAL_CLICK_CLOSE)}
+        onClose={() => handleClick(MODAL_CLICK_CLOSE)}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
           <Box margin={1} position={"absolute"} right={0} top={0}>
-            <Button variant="text" onClick={()=>handleClick(MODAL_CLICK_CLOSE)}>
+            <Button
+              variant="text"
+              onClick={() => handleClick(MODAL_CLICK_CLOSE)}
+            >
               <CloseIcon
                 style={{
                   margin: "10px",
@@ -62,19 +67,36 @@ export default function ModalMenu({ open = false, handleClick=null }) {
             justifyContent={"center"}
             alignItems={"center"}
           >
-            <Button variant="text" onClick={()=>handleClick(MODAL_CLICK_HOME)}>
+            <Button
+              variant="text"
+              onClick={() => handleClick(MODAL_CLICK_HOME)}
+            >
               <Typography color="white" fontWeight={200} variant="subtitle1">
                 HOME
               </Typography>
             </Button>
-            <Button variant="text" onClick={()=>handleClick(MODAL_CLICK_ABOUT)}>
+            <Button
+              variant="text"
+              onClick={() => handleClick(MODAL_CLICK_ABOUT)}
+            >
               <Typography color="white" fontWeight={200} variant="subtitle1">
                 ABOUT
               </Typography>
             </Button>
-            <Button variant="text" onClick={()=>handleClick(MODAL_CLICK_CONTACT_US)}>
+            <Button
+              variant="text"
+              onClick={() => handleClick(MODAL_CLICK_CONTACT_US)}
+            >
               <Typography color="white" fontWeight={200} variant="subtitle1">
                 CONTACT US
+              </Typography>
+            </Button>
+            <Button
+              variant="text"
+              onClick={() => handleClick(MODAL_CLICK_LOGOUT)}
+            >
+              <Typography color="white" fontWeight={200} variant="subtitle1">
+                SIGN-OUT
               </Typography>
             </Button>
           </Stack>

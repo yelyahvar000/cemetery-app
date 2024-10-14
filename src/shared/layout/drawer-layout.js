@@ -33,7 +33,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
-  const { window, content, user } = props;
+  const { window, content, user, onLogout } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
   const [curUrl, setCurUrl] = React.useState('')
@@ -77,11 +77,6 @@ function ResponsiveDrawer(props) {
       caption: "Profiling",
       icon: AssignmentIndIcon,
       href: "profiling",
-    },
-    {
-      caption: "Mapping",
-      icon: AddLocationAltIcon,
-      href: "mapping",
     },
     {
       caption: "Notification",
@@ -140,7 +135,7 @@ function ResponsiveDrawer(props) {
               <Typography>{curUrl}</Typography>
             </Box>
             <Box>
-              <Button variant="outlined" color="white">
+              <Button variant="outlined" color="white" onClick={onLogout}>
                 LOGOUT
               </Button>
             </Box>

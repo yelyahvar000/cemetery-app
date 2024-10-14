@@ -7,7 +7,7 @@ import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-export const PasswordField = ({label}) => {
+export const PasswordField = ({label,onChange, required=false}) => {
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -26,6 +26,8 @@ export const PasswordField = ({label}) => {
         {label}
       </InputLabel>
       <OutlinedInput
+        required={required}
+        onChange={(e) => onChange(e.target.value)}
         size="small"
         variant="outlined"
         id="outlined-adornment-password"

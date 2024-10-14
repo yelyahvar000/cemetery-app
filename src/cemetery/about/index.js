@@ -2,12 +2,8 @@ import * as React from "react";
 import { Container, Divider, Stack, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid2";
 import Button from "@mui/material/Button";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import LOGO from "../../assets/Buenavista-sm.png";
-import BG from "../../assets/main-bg.jpg";
+import BG from "../../assets/about.jpg";
 
 import banbanImg from "../../assets/banban.JPG";
 import poblasionImg from "../../assets/poblasion.JPG";
@@ -21,10 +17,13 @@ import {
   MODAL_CLICK_CLOSE,
   MODAL_CLICK_CONTACT_US,
   MODAL_CLICK_HOME,
+  MODAL_CLICK_LOGOUT,
   ROUTE_ABOUT,
   ROUTE_CONTACT_US,
   ROUTE_FINDER,
+  ROUTE_LOGIN,
 } from "../../constants";
+import { resetStorage } from "../../utility";
 
 export const About = () => {
   const navigate = useNavigate();
@@ -44,11 +43,15 @@ export const About = () => {
       case MODAL_CLICK_HOME:
         navigate(ROUTE_FINDER);
         break;
+      case MODAL_CLICK_LOGOUT:
+        resetStorage();
+        navigate(ROUTE_LOGIN);
+        break;
     }
   };
 
   return (
-    <Paper sx={{ background: "black" }}>
+    <Paper sx={{ backgroundImage: `url("${BG}")` }}>
       <Box
         justifyContent={"flex-end"}
         sx={{ display: "flex", padding: "2rem" }}
@@ -264,7 +267,7 @@ export const About = () => {
           </Stack>
         </Box>
       </Container>
-      <ModalMenu open={open} handleClick={(id)=>onModalMenuClick(id)} />
+      <ModalMenu open={open} handleClick={(id) => onModalMenuClick(id)} />
     </Paper>
   );
 };

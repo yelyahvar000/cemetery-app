@@ -1,4 +1,4 @@
 export const appConfig = {
-    enableAuthToken: false,
-    fakeToken:'test'
+    enableAuthToken: true,
+    fakeToken:''
 }

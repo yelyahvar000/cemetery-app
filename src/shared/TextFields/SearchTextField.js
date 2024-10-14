@@ -8,7 +8,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import DirectionsIcon from "@mui/icons-material/Directions";
 import { Button, Typography } from "@mui/material";
 
-export function SearchTextField({ callback }) {
+export function SearchTextField({ onSearch, onChange }) {
   return (
     <Paper
       fullWidth
@@ -16,6 +16,7 @@ export function SearchTextField({ callback }) {
       sx={{ p: "2px 4px", display: "flex", alignItems: "center" }}
     >
       <InputBase
+        onChange={onChange}
         fullWidth
         size="large"
         sx={{ ml: 1, flex: 1 }}
@@ -26,7 +27,7 @@ export function SearchTextField({ callback }) {
         <SearchIcon />
       </IconButton>
       <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-      <Button onClick={callback}>
+      <Button onClick={onSearch}>
         <Typography fontWeight={800}>Search</Typography>
       </Button>
     </Paper>

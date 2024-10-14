@@ -1,42 +1,38 @@
-import {
-  Button,
-  TextField,
-  Alert,
-  Typography,
-  Grid2,
-} from "@mui/material";
+import { Button, Alert, Typography, Grid2 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 import LOGO from "../../assets/Buenavista-sm.png";
 import BG from "../../assets/main-bg.jpg";
-import { Link } from "react-router-dom";
-import { usePostLoginMutation } from "../../service/loginService";
-import { useEffect, useState } from "react";
-import "./login.css"
-import {PageWrapper} from '../../shared'
+import { ROUTE_ADMIN, ROUTE_ADMIN_DASHBOARD, ROUTE_FINDER, ROUTE_REGISTRATION } from "../../constants";
+import { useClientLoginMutation } from "../../service/clientService";
+import { useState } from "react";
+import { PageWrapper } from "../../shared";
 import { PasswordField, SimpleField } from "../../shared/TextFields";
-import { ROUTE_REGISTRATION } from "../../constants";
+import "./login.css"; 
+import { getUser } from "../../utility";
 
 export const LoginPage = () => {
-  const [login] = usePostLoginMutation();
+  const navigate = useNavigate();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [apiStatus, setApiStatus] = useState({
-    success: null,
-    message:''
-  })
+  const [clientLoginRequest, { error, isLoading }] = useClientLoginMutation();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const onLogin = async () => {
-    setIsLoading(true)
-    const response = await login({
-      email: "email@domain.com",
-      password: "Password123",
+    clientLoginRequest({
+      email,
+      password
+    }).then((response) => {
+      if (response?.data?.status == 200) {
+        const user = getUser();
+        if (user?.accountType == "admin") {
+          navigate("/cemetery/admin/dashboard");
+        } else {
+          navigate(ROUTE_FINDER);
+        }
+      }
     });
-    setIsLoading(false);
-    if (response.error) {
-      setApiStatus("FAILED")
-    } else {
-       setApiStatus("SUCCESS");
-    }
-    console.log("response", response);
   };
 
   return (
@@ -49,7 +45,7 @@ export const LoginPage = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              flexDirection: "column"
+              flexDirection: "column",
             }}
           >
             <Grid2
@@ -101,20 +97,29 @@ export const LoginPage = () => {
               width={400}
               marginTop={"40px"}
             >
-              {apiStatus?.success && (
-                <Alert severity="success">This is a success Alert.</Alert>
+              {error?.status == 200 && (
+                <Alert severity="success">{error.message}</Alert>
               )}
 
-              {apiStatus?.success == false && (
-                <Alert severity="error">This is an error Alert.</Alert>
+              {error?.status >= 400 && (
+                <Alert severity="error">{error.message}</Alert>
               )}
 
               <Grid2 spacing={2}>
-                <SimpleField label="Email" type="email" />
+                <SimpleField
+                  label="Email"
+                  type="email"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                />
               </Grid2>
 
               <Grid2 spacing={2}>
-                <PasswordField label="Password" />
+                <PasswordField
+                  label="Password"
+                  onChange={(e) => setPassword(e)}
+                />
               </Grid2>
 
               <Grid2 container justifyContent={"center"}>
@@ -130,7 +135,7 @@ export const LoginPage = () => {
               </Grid2>
             </Grid2>
             <Grid2 sx={{ marginTop: "12px" }}>
-              <Typography variant="caption">
+              <Typography variant="caption" sx={{ color: "black" }}>
                 Dont have an account yet?{" "}
                 <Link to={ROUTE_REGISTRATION}>SIGN UP</Link>
               </Typography>

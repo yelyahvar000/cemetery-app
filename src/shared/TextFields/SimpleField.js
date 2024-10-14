@@ -1,7 +1,7 @@
 import * as React from "react";
 import { TextField, Box, InputLabel } from "@mui/material";
 
-export const SimpleField = ({onChange, label, type}) => {
+export const SimpleField = (props) => {
   return (
     <Box
       component="form"
@@ -10,11 +10,13 @@ export const SimpleField = ({onChange, label, type}) => {
       autoComplete="off"
     >
       <TextField
-        type={type}
-        size="small"
-        onChange={onChange}
+        fullWidth={props.fullWidth}
+        required={props.required ?? false}
+        type={props.type}
+        size={props.size ?? 'small'}
+        onChange={(e) => props.onChange(e)}
         id="outlined-basic"
-        label={label}
+        label={props.label}
         variant="outlined"
       />
     </Box>

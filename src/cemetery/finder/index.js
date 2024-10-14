@@ -1,37 +1,12 @@
-import * as React from "react";
-import { styled, alpha } from "@mui/material/styles";
-import InputBase from "@mui/material/InputBase";
-import SearchIcon from "@mui/icons-material/Search";
-import {
-  Container,
-  Divider,
-  Grid2,
-  InputLabel,
-  Stack,
-  Typography,
-} from "@mui/material";
+import React from "react";
+import { Grid2, Stack, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid2";
 import Button from "@mui/material/Button";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
 import LOGO from "../../assets/Buenavista-sm.png";
 import BG from "../../assets/main-bg.jpg";
-import banbanImg from "../../assets/banban.JPG";
-import poblasionImg from "../../assets/poblasion.JPG";
-import eastvelenciaImg from "../../assets/east_velencia.JPG";
-import HomeWorkIcon from "@mui/icons-material/HomeWork";
 import { useNavigate } from "react-router-dom";
-import MenuAppBar from "../../shared/Headers/MenuAppBar";
-import {
-  CustomizedInputsStyled1,
-  SearchTextField,
-  TextFieldWithLabelOnTop,
-} from "../../shared/TextFields";
-import PermPhoneMsgIcon from "@mui/icons-material/PermPhoneMsg";
-import AttachEmailIcon from "@mui/icons-material/AttachEmail";
-import FacebookIcon from "@mui/icons-material/Facebook";
+import { SearchTextField } from "../../shared/TextFields";
 
 import ModalMenu from "../../shared/Modal/ModalMenu";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -41,18 +16,29 @@ import {
   MODAL_CLICK_CLOSE,
   MODAL_CLICK_CONTACT_US,
   MODAL_CLICK_HOME,
+  MODAL_CLICK_LOGOUT,
   ROUTE_ABOUT,
   ROUTE_CONTACT_US,
   ROUTE_FINDER,
+  ROUTE_LOGIN,
 } from "../../constants";
 
+import { useClientSearchDeceasedQuery } from "../../service/clientService";
+import { resetStorage } from "../../utility";
+
 export const Finder = () => {
+  const [search, setSearch] = React.useState();
+  const { data } = useClientSearchDeceasedQuery(search);
+
   const navigate = useNavigate();
-    const [isCheck, setIsCheck] = React.useState(false);
-    const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const onSearch = () => {
-    navigate("/feature/map-route-page");
+    if (data && data?.deceased.deceasedId && data?.deceased.cemeteryLocation) {
+      navigate(
+        `/cemetery/map-view?fullname=${search}&location=${data?.deceased.cemeteryLocation}`
+      );
+    }
   };
 
   const onModalMenuClick = (id) => {
@@ -69,6 +55,10 @@ export const Finder = () => {
       case MODAL_CLICK_HOME:
         navigate(ROUTE_FINDER);
         break;
+      case MODAL_CLICK_LOGOUT:
+        resetStorage();
+         navigate(ROUTE_LOGIN);
+        break;
     }
   };
 
@@ -83,7 +73,13 @@ export const Finder = () => {
     >
       <Box
         justifyContent={"flex-end"}
-        sx={{ display: "flex", padding: "2rem", top:0, right:0,  position:'absolute' }}
+        sx={{
+          display: "flex",
+          padding: "2rem",
+          top: 0,
+          right: 0,
+          position: "absolute",
+        }}
       >
         <Box sx={{ border: "1px solid white" }}>
           <Button
@@ -158,7 +154,10 @@ export const Finder = () => {
 
           <Grid2 container size={12} justifyContent={"start"}>
             <Box sx={{ width: "80%" }}>
-              <SearchTextField callback={onSearch} />
+              <SearchTextField
+                onSearch={onSearch}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </Box>
           </Grid2>
         </Grid2>
