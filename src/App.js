@@ -170,7 +170,7 @@ const appRoutes = [
       {
         path: ROUTE_ADMIN_USER_MANAGEMENT,
         element: (
-          <AdminProtectedRoutes permission="canViewUserManagementX">
+          <AdminProtectedRoutes permission="canViewUserManagement">
             <UserManagement />
           </AdminProtectedRoutes>
         ),

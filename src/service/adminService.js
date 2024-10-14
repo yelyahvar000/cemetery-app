@@ -38,6 +38,10 @@ export const adminApi = createApi({
         url: `/register/admin`,
         method: "POST",
         body,
+        headers: {
+          'account-type': body?.role,
+          Authorization: `Bearer ${getToken()}`,
+        },
       }),
       transformErrorResponse: (response) => {
         //remove permission, token, user from the localstorage
@@ -85,7 +89,14 @@ export const adminApi = createApi({
         return response;
       },
       transformResponse: (response) => {
-        return response;
+        return response.deceased.map((item) => ({
+          id: item.deceasedId,
+          firstName: item.firstName,
+          lastName: item.lastName,
+          born: item.born,
+          died: item.died,
+          place: item.cemeteryLocation,
+        }));
       },
     }),
 
@@ -123,6 +134,29 @@ export const adminApi = createApi({
         return response;
       },
     }),
+
+    adminFetchUsers: builder.query({
+      query: () => ({
+        url: `/admin/user`,
+        method: "GET",
+        headers: { Authorization: `Bearer ${getToken()}` },
+      }),
+      transformErrorResponse: (response) => {
+        if (response?.status == 401) {
+          process401Response(response);
+        }
+        return response;
+      },
+      transformResponse: (response) => {
+        return response.list.map((item) => ({
+          id: item.id,
+          firstName: item.firstName,
+          lastName: item.lastName,
+          userName: item.userId,
+          position: item.accountType,
+        }));
+      },
+    }),
   }),
 });
 
@@ -130,7 +164,9 @@ export const {
   useAdminLoginMutation,
   useAdminRegisterUserMutation,
   useAdminFetchDeceasedQuery,
+  useLazyAdminFetchDeceasedQuery,
   useAdminFetchDeceasedByIdQuery,
   useAdminPatchDeceasedByIdMutation,
-  useAdminAddDeceasedMutation
+  useAdminAddDeceasedMutation,
+  useLazyAdminFetchUsersQuery
 } = adminApi;

@@ -10,6 +10,7 @@ export function MapViewComponent({
   location = "east valencia",
   initialData = null,
   mapBackground,
+  deceasedInfo = null
 }){
 
   return (
@@ -21,6 +22,7 @@ export function MapViewComponent({
           menuBarTitle={menuBarTitle}
           goBack={goBack}
           onSave={onSave}
+          deceasedInfo={deceasedInfo}
           allowGrid={allowGrid}
           location={location}
           initialData={initialData}

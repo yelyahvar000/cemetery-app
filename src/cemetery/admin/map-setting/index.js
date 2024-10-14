@@ -22,18 +22,11 @@ export function MapSetting() {
   const [patchCall, { error, isLoading }] = useAdminPatchDeceasedByIdMutation();
   const { data } = useAdminFetchDeceasedByIdQuery(searchParams.get("id"));
 
-  console.log("[data]", data);
-
   const goBack = () => {
     navigate(-1);
   };
 
   useEffect(() => {
-    console.log("data", data, {
-      entrance: getInitialEntrance(),
-      destination: getInitialEntrance(),
-      dots: [getInitialEntrance()],
-    });
     if (data?.deceased?.canvasMap) {
       setInitialData(data?.deceased?.canvasMap);
     } else {
@@ -49,9 +42,9 @@ export function MapSetting() {
 
   const getInitialBg = () => {
     const location = searchParams.get("location");
-    const isBanBan = location.toLowerCase().includes("ban ban");
+    const isBanBan = location.toLowerCase().includes("banban");
     const isPoblascion = location.toLowerCase().includes("poblacion");
-    const isEastVelencia = location.toLowerCase().includes("east velencia");
+    const isEastVelencia = location.toLowerCase().includes("east valencia");
 
     if (isBanBan) {
       return map_banban;
@@ -65,12 +58,10 @@ export function MapSetting() {
   };
 
   const getInitialEntrance = () => {
-    console.log('searchParams.get("location")', searchParams.get("location"));
-
     const location = searchParams.get("location");
-    const isBanBan = location.toLowerCase().includes("ban ban");
+    const isBanBan = location.toLowerCase().includes("banban");
     const isPoblascion = location.toLowerCase().includes("poblacion");
-    const isEastVelencia = location.toLowerCase().includes("east velencia");
+    const isEastVelencia = location.toLowerCase().includes("east valencia");
 
     if (isBanBan) {
       return { x: 930, y: 770, w: 20, h: 20 };
@@ -79,27 +70,27 @@ export function MapSetting() {
     } else if (isPoblascion) {
       return { x: 240, y: 330, w: 20, h: 20 };
     } else {
-      return { x: 930, y: 770, w: 20, h: 20 }
+      return { x: 930, y: 770, w: 20, h: 20 };
     }
   };
 
-    const onSave = (data) => {
-      console.log("onSave data", data);
+  const onSave = (data) => {
     setBase64Data(data);
     setShowModal(true);
   };
 
-    const confirm = async () => {
+  const confirm = async () => {
     setShowModal(false);
     const response = await patchCall({
       deceasedId: searchParams.get("id"),
       canvasMap: JSON.stringify(base64Data),
     });
-    console.log("response", response);
     if (response.data) {
       navigate(-1);
     }
   };
+
+  console.log("data", data);
 
   return (
     <>
@@ -111,6 +102,7 @@ export function MapSetting() {
         onSave={onSave}
         allowGrid={true}
         initialData={initialData}
+        deceasedInfo={data?.deceased}
       />
       <CustomModal
         open={showModal}

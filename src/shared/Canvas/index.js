@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { BoxRectangle } from "./rectangleClass";
 import PIN_START from "../../assets/green_pin_small.png";
 import PIN_END from "../../assets/red_pin_small.png";
-import { Box, Button, Stack } from "@mui/material";
+import imgCoffine from "../../assets/coffin.png";
+import { Box, Button, Drawer, Stack, IconButton, Typography, Divider } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import MenuAppBar from "../../shared/Headers/MenuAppBar";
 import "./mapRoutePage.css";
+import CloseIcon from "@mui/icons-material/Close";
 
 const MODE = {
   read: "read",
@@ -20,7 +22,8 @@ export const CemeteryCanvas = ({
   onSave,
   allowGrid = false,
   location = '',
-  initialData = null
+  initialData = null,
+  deceasedInfo= null
 }) => {
   const [boxes, setBoxes] = useState([]);
   const [list, setList] = useState([]);
@@ -33,18 +36,7 @@ export const CemeteryCanvas = ({
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [posDown, setPosDown] = useState({ x: 0, y: 0 });
   const [locked, setLocked] = useState(false);
-
   const [pointer, setPointer] = useState(null);
-  const [greenPin, setGreenPin] = useState(null);
-
-  const [entrance, setEntrance] = useState({ x: 950, y: 800, h: 20, w: 20 });
-  const [destination, setDestination] = useState({
-    x: 950,
-    y: 800,
-    h: 20,
-    w: 20,
-  });
-
   const [showGrid, setShowGrid] = useState(allowGrid);
   const [puntod, setPuntod] = useState([{ x: 560, y: 365, w: 10, h: 10 }]);
   const [base64Data, setBase64Data] = useState({
@@ -52,6 +44,12 @@ export const CemeteryCanvas = ({
     destination: {  },
     dots: [],
   });
+  const [open, setOpen] = useState(false)
+
+
+  useEffect(() => {
+    console.log("deceasedInfo", deceasedInfo);
+  }, [deceasedInfo]);
 
   useEffect(() => {
     if (initialData) {
@@ -133,6 +131,33 @@ export const CemeteryCanvas = ({
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
+    if (!activated) {
+       const destination = { ...base64Data.destination };
+       const box1 = new BoxRectangle(
+         "box1",
+         contextRef.current,
+         "",
+         destination.x,
+         destination.y,
+         destination.w,
+         destination.h
+       );
+       box1.draw();
+       const box2 = new BoxRectangle(
+         "box2",
+         contextRef.current,
+         "purple",
+         x - 20,
+         y - 20,
+         10,
+         10
+       );
+      if (box2.collision(box1)) {
+        //this is for evaluation
+        //setOpen(true);
+      } 
+    }
+      
     setPosDown({ x, y });
     setActivated(true);
   };
@@ -150,6 +175,7 @@ export const CemeteryCanvas = ({
     return null;
   };
 
+  /**Change ng grid color, width, size*/
   const createGridTiles = () => {
     const context = contextRef.current;
     context.beginPath();
@@ -208,13 +234,19 @@ export const CemeteryCanvas = ({
 
       drawThis(pos.x, pos.y);
 
-      base64Data?.dots.map((item) => {
-        //drawThis(item.x, item.y);
-      });
+      const rawBase64 = { ...base64Data }; 
+      const endImage = new Image();
+      endImage.src = PIN_END;
 
-       if (pointer?.x && pointer?.y) {
-         const endImage = new Image();
-         endImage.src = PIN_END;
+      if (pointer?.x && pointer?.y && activated) {
+        rawBase64.destination = {
+          x: pointer.x - 30,
+          y: pointer.y - 40,
+          w: rawBase64.destination.w,
+          h: rawBase64.destination.h,
+        };
+        setBase64Data(rawBase64);
+
          endImage.onload = () => {
            contextRef.current.drawImage(
              endImage,
@@ -224,11 +256,16 @@ export const CemeteryCanvas = ({
              60
            );
          };
-       }
-      
-      if (base64Data.dots.length > 0) {
-        const lastElem = base64Data.dots[base64Data.dots.length - 1];
-        console.log("lastElem", lastElem);
+      } else {
+        endImage.onload = () => {
+          contextRef.current.drawImage(
+            endImage,
+            rawBase64.destination.x,
+            rawBase64.destination.y,
+            60,
+            60
+          );
+        };
       }
 
         const startImage = new Image();
@@ -319,19 +356,9 @@ export const CemeteryCanvas = ({
   }, [pos]);
 
   const onProcessData = () => {
-    const newBase64Data = base64Data;
-    newBase64Data.destination = {
-      ...newBase64Data.destination,
-      x: pointer.x,
-      y: pointer.y,
-    };
-    console.log("onProcessData list", list);
     const newList = list.map((item) => ({
       x:item.getX(),y:item.getY(),h:item.getH(),w:item.getW()
     }))
-    console.log("onProcessData newList", newList);
-
-
     onSave({ ...base64Data, dots: newList });
   };
 
@@ -340,13 +367,15 @@ export const CemeteryCanvas = ({
   const onSetDestinationPoint = () => {};
 
   const onReset = () => {
-    //window.location.reload();
     const shadowData = { ...base64Data };
     shadowData.dots = []
+    shadowData.destination = shadowData.entrance;
     shadowData.dots.push(shadowData.destination);
-    console.log("shadowData", shadowData);
     setBase64Data(shadowData);
     setLocked(false);
+    setList([]);
+    onClearCanvas();
+    updateCanvas();
   };
 
   const onCrateLine = () => {};
@@ -355,6 +384,10 @@ export const CemeteryCanvas = ({
     onClearCanvas()
     updateCanvas()
   }, [list]);
+
+  const toggleDrawer = (val) => {
+    setOpen(val);
+  }
 
   return (
     <>
@@ -376,12 +409,15 @@ export const CemeteryCanvas = ({
               >
                 Set Destination
               </Button>
-              <Button variant="contained" color="error" onClick={onReset}>
-                Reset
-              </Button>
+             
               <Button variant="contained" color="error" onClick={onCrateLine}>
                 Create Line
               </Button> */}
+
+              <Button variant="contained" color="error" onClick={onReset}>
+                Reset
+              </Button>
+
               <Button
                 variant="contained"
                 color="success"
@@ -395,14 +431,115 @@ export const CemeteryCanvas = ({
       )}
 
       <Grid container justifyContent={"center"}>
-          <Box>
+        <Box>
           <img src={mapBackground} width={canvasWidth} height={canvasHeight} />
-        </Box>   
+        </Box>
 
         <Box sx={{ position: "absolute" }}>
           <canvas className="canvas-container-bar-char" ref={canvasRef} />
         </Box>
       </Grid>
+
+      {deceasedInfo && (
+        <Drawer open={open} onClose={() => toggleDrawer(false)}>
+          <Box sx={{ width: 400 }}>
+            <Box sx={{ display: "flex" }} justifyContent={"flex-end"}>
+              <IconButton onClick={() => setOpen(false)}>
+                <CloseIcon sx={{ fontSize: 40 }} />
+              </IconButton>
+            </Box>
+            <Stack direction={"column"}>
+              <Box sx={{ width: "100%" }}>
+                <img src={imgCoffine} style={{ width: "100%" }} />
+              </Box>
+              <Box
+                justifyContent={"center"}
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  paddingTop: "1rem",
+                  paddingBottom: "1rem",
+                }}
+              >
+                <Stack direction={"column"} textAlign={"center"}>
+                  <Typography variant="h6">{`${deceasedInfo?.firstName} ${deceasedInfo?.middleName}. ${deceasedInfo?.lastName}`}</Typography>
+                  <Typography variant="body2">NAME</Typography>
+                </Stack>
+              </Box>
+
+              <Divider />
+
+              <Box
+                justifyContent={"space-between"}
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  paddingTop: "1rem",
+                  paddingBottom: "1rem",
+                }}
+              >
+                <Box
+                  justifyContent={"center"}
+                  sx={{ padding: "1rem", display: "flex", width: "100%" }}
+                >
+                  <Stack direction={"column"} textAlign={"center"}>
+                    <Typography variant="body1">BORN</Typography>
+                    <Typography variant="h6">{deceasedInfo?.born}</Typography>
+                  </Stack>
+                </Box>
+                <Box
+                  justifyContent={"center"}
+                  sx={{ padding: "1rem", display: "flex", width: "100%" }}
+                >
+                  <Stack direction={"column"} textAlign={"center"}>
+                    <Typography variant="body1">DIED</Typography>
+                    <Typography variant="h6">{deceasedInfo?.died}</Typography>
+                  </Stack>
+                </Box>
+              </Box>
+
+              <Divider />
+
+              <Box
+                justifyContent={"center"}
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  paddingTop: "1rem",
+                  paddingBottom: "1rem",
+                }}
+              >
+                <Stack direction={"column"} textAlign={"center"}>
+                  <Typography variant="body1">Layer of niche</Typography>
+                  <Typography variant="h6">
+                    Layer {deceasedInfo?.layerNiche}
+                  </Typography>
+                </Stack>
+              </Box>
+
+              <Divider />
+
+              <Box
+                justifyContent={"center"}
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  paddingTop: "1rem",
+                  paddingBottom: "1rem",
+                }}
+              >
+                <Stack direction={"column"} textAlign={"center"}>
+                  <Typography variant="body1">Cemetery Location</Typography>
+                  <Typography variant="h6">
+                    {deceasedInfo?.cemeteryLocation}
+                  </Typography>
+                </Stack>
+              </Box>
+              <Divider />
+            </Stack>
+          </Box>
+        </Drawer>
+      )}
     </>
   );
 };

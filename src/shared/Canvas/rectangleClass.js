@@ -13,10 +13,10 @@ export class BoxRectangle {
     return this.id;
   }
 
-  draw() {
-    this.ctx.fillStyle = this.color;
-    this.ctx.fillRect(this.x, this.y, this.w, this.h);
-  }
+  // draw() {
+  //   this.ctx.fillStyle = this.color;
+  //   this.ctx.fillRect(this.x, this.y, this.w, this.h);
+  // }
 
   update(x,y) {
     this.x = x;

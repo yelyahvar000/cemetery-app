@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Grid2, Stack, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
@@ -23,22 +23,36 @@ import {
   ROUTE_LOGIN,
 } from "../../constants";
 
-import { useClientSearchDeceasedQuery } from "../../service/clientService";
+import { useLazyClientSearchDeceasedQuery } from "../../service/clientService";
 import { resetStorage } from "../../utility";
 
 export const Finder = () => {
   const [search, setSearch] = React.useState();
-  const { data } = useClientSearchDeceasedQuery(search);
-
+  const [searchDeased, result] = useLazyClientSearchDeceasedQuery(search);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
 
-  const onSearch = () => {
-    if (data && data?.deceased.deceasedId && data?.deceased.cemeteryLocation) {
-      navigate(
-        `/cemetery/map-view?fullname=${search}&location=${data?.deceased.cemeteryLocation}`
-      );
+  useEffect(() => {
+    if (result.error) {
+      if (result.error.status == 401) {
+        resetStorage();
+        navigate(ROUTE_LOGIN)
+      }
     }
+
+    if (result.data) {
+      if (Number(result.data.statusCode) == 200) {
+        navigate(`/cemetery/map-view?fullname=${search}&location=${result?.data?.deceased.cemeteryLocation}`);
+      } else {
+        setErrorMessage(result.currentData?.message)
+      }
+    }
+
+  }, [result]);
+
+  const onSearch = () => {
+    searchDeased(search);
   };
 
   const onModalMenuClick = (id) => {
@@ -158,6 +172,9 @@ export const Finder = () => {
                 onSearch={onSearch}
                 onChange={(e) => setSearch(e.target.value)}
               />
+              {errorMessage && (
+                <Typography color="error" variant="body1" sx={{fontWeight:600, marginTop:'3px'}}>*{errorMessage}</Typography>
+              )}
             </Box>
           </Grid2>
         </Grid2>

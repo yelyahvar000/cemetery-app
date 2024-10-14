@@ -10,6 +10,7 @@ export const SimpleField = (props) => {
       autoComplete="off"
     >
       <TextField
+        placeholder={props?.placeholder ?? ""}
         fullWidth={props.fullWidth}
         required={props.required ?? false}
         type={props.type}

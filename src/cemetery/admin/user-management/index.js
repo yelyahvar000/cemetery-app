@@ -1,49 +1,28 @@
 import { Box, Button, Divider, Grid2, Stack, Typography } from "@mui/material";
 import BasicTable from "../../../shared/Table/BasicTable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import CustomModal from "../../../shared/Modal/CustomModal";
 import { SimpleField } from "../../../shared";
-//import { useAdminRegisterUserMutation } from "../../../service/adminService";
+import { useAdminRegisterUserMutation, useLazyAdminFetchUsersQuery } from "../../../service/adminService";
 
 export const UserManagement = () => {
-  //const [register] = useAdminRegisterUserMutation();
+  const [register] = useAdminRegisterUserMutation();
 
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(3);
 
   const [openCreateAccount, setOpenCreateAccount] = useState(false);
+  const [getAdminList, result] = useLazyAdminFetchUsersQuery()
 
-  const [role, setRole] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [userName, setUserName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const rows = [
-    {
-      id: 1,
-      firstName: "Peter",
-      lastName: "Pan",
-      userName: "Peter.Pan",
-      position: "Treasurer",
-    },
-    {
-      id: 2,
-      firstName: "Johnson",
-      lastName: "Smith",
-      userName: "Johnson.Smith",
-      position: "Treasurer",
-    },
-    {
-      id: 3,
-      firstName: "Captain",
-      lastName: "America",
-      userName: "Captain.America",
-      position: "Local Economics",
-    },
-  ];
+  const [fieldData, setFieldData] = useState({
+    role: "",
+    firstName: "",
+    lastName: "",
+    userName: "",
+    email: "",
+    password: "",
+  });
 
   const columns = [
     {
@@ -52,22 +31,22 @@ export const UserManagement = () => {
       key: "id",
     },
     {
-      title: "firstName",
+      title: "First Name",
       dataIndex: "firstName",
       key: "firstName",
     },
     {
-      title: "lastName",
+      title: "Last Name",
       dataIndex: "lastName",
       key: "lastName",
     },
     {
-      title: "userName",
+      title: "User Name",
       dataIndex: "userName",
       key: "userName",
     },
     {
-      title: "position",
+      title: "Position",
       dataIndex: "position",
       key: "position",
     },
@@ -77,6 +56,7 @@ export const UserManagement = () => {
       render: (record) => (
         <Box>
           <Button
+            disabled
             size="small"
             variant="contained"
             onClick={() => onAction(record)}
@@ -96,6 +76,21 @@ export const UserManagement = () => {
     setPage(value);
   };
 
+  useEffect(() => {
+    getAdminList()
+  }, [])
+
+  const onConfirmAddUser = async() =>{
+    const response = await register(fieldData)
+    if (response.data.statusCode == 200) {
+      getAdminList();
+    }
+  }
+  
+  useEffect(() => {
+    console.log("result", result);
+  }, [result]);
+  
   return (
     <Box>
       <Button
@@ -106,7 +101,7 @@ export const UserManagement = () => {
         Add User
       </Button>
       <BasicTable
-        rows={rows}
+        rows={result?.data}
         columns={columns}
         onPageChange={onPageChange}
         page={page}
@@ -115,7 +110,10 @@ export const UserManagement = () => {
       <CustomModal
         open={openCreateAccount}
         onClose={() => setOpenCreateAccount(false)}
-        onOk={() => setOpenCreateAccount(false)}
+        onOk={() => {
+          setOpenCreateAccount(false)
+          onConfirmAddUser()
+        }}
         onCancel={() => setOpenCreateAccount(false)}
       >
         <>
@@ -142,32 +140,57 @@ export const UserManagement = () => {
             <Grid2 sm={24} lg={24} sx={{ width: "100%" }}>
               <SimpleField
                 label="Role"
-                onChange={(e) => setRole(e.target.value)}
+                onChange={(e) =>
+                  setFieldData((prevState) => ({
+                    ...prevState,
+                    role: e.target.value,
+                  }))
+                }
               />
             </Grid2>
             <Grid2 sm={24} lg={24} sx={{ width: "100%" }}>
               <SimpleField
                 label="First Name"
-                onChange={(e) => setRole(e.target.value)}
+                onChange={(e) =>
+                  setFieldData((prevState) => ({
+                    ...prevState,
+                    firstName: e.target.value,
+                  }))
+                }
               />
             </Grid2>
             <Grid2 sm={24} lg={24} sx={{ width: "100%" }}>
               <SimpleField
                 label="Last Name"
-                onChange={(e) => setRole(e.target.value)}
+                onChange={(e) =>
+                  setFieldData((prevState) => ({
+                    ...prevState,
+                    lastName: e.target.value,
+                  }))
+                }
               />
             </Grid2>
             <Grid2 sm={24} lg={24} sx={{ width: "100%" }}>
               <SimpleField
                 label="Email"
-                onChange={(e) => setRole(e.target.value)}
+                onChange={(e) =>
+                  setFieldData((prevState) => ({
+                    ...prevState,
+                    email: e.target.value,
+                  }))
+                }
               />
             </Grid2>
             <Grid2 sm={24} lg={24} sx={{ width: "100%" }}>
               <SimpleField
                 type="password"
                 label="Password"
-                onChange={(e) => setRole(e)}
+                onChange={(e) =>
+                  setFieldData((prevState) => ({
+                    ...prevState,
+                    password: e.target.value,
+                  }))
+                }
               />
             </Grid2>
           </Grid2>

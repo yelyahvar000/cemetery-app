@@ -1,7 +1,10 @@
 import BasicTable from "../../../shared/Table/BasicTable";
 import { useEffect, useState } from "react";
 import { Box, Button, Divider, Grid2, Stack, Typography } from "@mui/material";
-import { useAdminAddDeceasedMutation, useAdminFetchDeceasedQuery } from "../../../service/adminService";
+import {
+  useAdminAddDeceasedMutation,
+  useLazyAdminFetchDeceasedQuery,
+} from "../../../service/adminService";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_ADMIN_MAPPING } from "../../../constants";
 import CustomModal from "../../../shared/Modal/CustomModal";
@@ -41,25 +44,16 @@ export const Profiling = () => {
   });
 
   const navigate = useNavigate();
-  const { data, isLoading, isSuccess, error } = useAdminFetchDeceasedQuery();
+  //const { data, isLoading, isSuccess, error } = useAdminFetchDeceasedQuery();
   const [addDeceased] = useAdminAddDeceasedMutation()
+  const [searchDeased, result] = useLazyAdminFetchDeceasedQuery();
+
+  console.log("result", result);
 
   useEffect(() => {
-    console.log(data, isLoading, isSuccess, error);
-    if (data) {
-      setList(
-        data.deceased.map((item) => ({
-          id: item.deceasedId,
-          firstName: item.firstName,
-          lastName: item.lastName,
-          born: item.born,
-          died: item.died,
-          place: item.cemeteryLocation ?? "null",
-        }))
-      );
-    }
-  }, [data, isLoading, isSuccess, error]);
-
+    searchDeased()
+  }, [])
+  
   const columns = [
     {
       title: "First Name",
@@ -117,7 +111,9 @@ export const Profiling = () => {
 
   const onAddDeceasedRecord = async() => {
     const response = await addDeceased(fieldData);
-    console.log(response);
+    if (response.data.statusCode == 200) {
+      searchDeased();
+    }
   }
 
   return (
@@ -130,7 +126,7 @@ export const Profiling = () => {
         Add User
       </Button>
       <BasicTable
-        rows={list}
+        rows={result.data ?? []}
         columns={columns}
         onPageChange={onPageChange}
         page={page}
@@ -234,8 +230,9 @@ export const Profiling = () => {
             </Grid2>
             <Grid2 sm={24} lg={24} sx={{ width: "100%" }}>
               <SimpleField
+                placeHolder="DD-MM-YYYY"
                 size="medium"
-                label="Born"
+                label="Born (DD-MM-YYYY)"
                 onChange={(e) =>
                   setFieldData((prev) => ({
                     ...prev,
@@ -247,7 +244,7 @@ export const Profiling = () => {
             <Grid2 sm={24} lg={24} sx={{ width: "100%" }}>
               <SimpleField
                 size="medium"
-                label="Died"
+                label="Died (DD-MM-YYYY)"
                 onChange={(e) =>
                   setFieldData((prev) => ({
                     ...prev,
@@ -278,10 +275,10 @@ export const Profiling = () => {
                     Poblacion Cemetery
                   </MenuItem>
                   <MenuItem value={"Ban Ban Cemetery"}>
-                    Ban Ban Cemetery
+                    Banban Cemetery
                   </MenuItem>
                   <MenuItem value={"East Velencia Cemetery"}>
-                    East Velencia Cemetery
+                    East Valencia Cemetery
                   </MenuItem>
                 </Select>
               </FormControl>
@@ -289,7 +286,7 @@ export const Profiling = () => {
             <Grid2 sm={24} lg={24} sx={{ width: "100%" }}>
               <SimpleField
                 size="medium"
-                label="Date Permit"
+                label="Date Permit (DD-MM-YYYY)"
                 onChange={(e) =>
                   setFieldData((prev) => ({
                     ...prev,
@@ -306,7 +303,7 @@ export const Profiling = () => {
                 <Select
                   labelId="natureApp-simple-select-label"
                   id="natureApp-simple-select"
-                  value={fieldData.cemeteryLocation}
+                  value={fieldData.natureApp}
                   label="Nature App"
                   onChange={(e) =>
                     setFieldData((prev) => ({
@@ -315,7 +312,8 @@ export const Profiling = () => {
                     }))
                   }
                 >
-                  <MenuItem value={"Poblacion Cemetery"}>Construction</MenuItem>
+                  <MenuItem value={"Construction"}>Construction</MenuItem>
+                  <MenuItem value={"Excavation"}>Excavation</MenuItem>
                 </Select>
               </FormControl>
             </Grid2>
@@ -405,6 +403,7 @@ export const Profiling = () => {
             </Grid2>
             <Grid2 sm={24} lg={24} sx={{ width: "100%" }}>
               <SimpleField
+                type="email"
                 size="medium"
                 label="Payee Email"
                 onChange={(e) =>

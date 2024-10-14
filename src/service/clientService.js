@@ -1,6 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { apiConfig } from '../config'
-import { getToken, process401Response, resetStorage, storeUserTokenPermission } from "../utility";
+import { apiConfig } from "../config";
+import {
+  getToken,
+  process401Response,
+  resetStorage,
+  storeUserTokenPermission,
+} from "../utility";
 
 export const clientApi = createApi({
   reducerPath: "clientApi",
@@ -78,7 +83,9 @@ export const clientApi = createApi({
   }),
 });
 
-export const { useClientLoginMutation, useClientRegisterMutation, useClientSearchDeceasedQuery } = clientApi;
-
-
-
+export const {
+  useClientLoginMutation,
+  useClientRegisterMutation,
+  useClientSearchDeceasedQuery,
+  useLazyClientSearchDeceasedQuery,
+} = clientApi;
